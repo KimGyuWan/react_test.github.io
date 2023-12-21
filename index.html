@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .yellow {
+      background-color: yellow;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+
+    #banner {
+      height: 0;
+      padding-top: 50%;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      transition: 0.5s;
+    }
+
+    .banner .btns {
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .banner .btns span {
+      display: inline-block;
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 50%;
+      border: 2px solid red;
+      font-size: 0;
+      line-height: 0;
+      margin: 0 1rem;
+    }
+
+    .banner .btns span.act {
+      background-color: red;
+    }
+
+    .stop {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="banner">
+    <div id="banner" style="background-image: url(img/img001.jpeg);"></div>
+    <div class="stop">
+      <button id="stopBtn">stop</button>
+    </div>
+    <div class="btns"></div>
+  </section>
+
+  <script>
+    const colorArray = ["red", "yellow", "blue"];
+    const imgArray = [
+      { src: 'img/img001.jpeg' },
+      { src: 'img/img002.jpeg' },
+      { src: 'img/img003.jpeg' },
+      { src: 'img/img004.jpeg' },
+      { src: 'img/img005.jpeg' },
+      { src: 'img/img006.jpeg' },
+    ]
+
+    // document.querySelector("#banner").classList = "red"; // #banner의 class를 red로 초기화하겠다.
+    //document.querySelector("#banner").classList.add("red"); // #banner에 "red"라는 class를 추가하겠다.
+    // document.querySelector("#banner").classList += colorArray[0]; // #banner에 " red"라는 class 추가하겠다.
+
+    // 중복되는 식 최적화
+    const banner = document.querySelector("#banner");
+    // 증감식 사용하기 위한 변수
+    let count = 0;
+    // setInterval 제어하기 위한 변수
+    let intervalId;  // let으로 선언해주어야 값이 바뀌어도 오류가 나지 않음.
+    let toggle = false;
+
+    // 버튼만들기
+    let btntag = "";
+    for (i = 0; i < imgArray.length; i++) {
+      btntag += `<span>${i}</span>`
+    }
+
+    document.querySelector(".banner .btns").innerHTML = btntag;  // .btns에 for문을 이용해서 태그 넣어주기
+    document.querySelectorAll(".banner .btns span")[count].classList = "act";  // 처음 span태그에 act클래스 넣어주기
+
+    // 콜백함수
+    const actClass = () => {
+      document.querySelectorAll(".banner .btns span").forEach((el, idx) => {  // 원시데이터를 주어로 하는 map  [].map / forEach는 html태그 Array를 주어로 함 태그들.forEach
+        if (count === idx) {
+          el.classList = "act";
+        } else {
+          el.classList = "";
+        };
+      });
+    }
+
+
+    const selectColor = () => {
+      // if 식 ( 내꺼 )
+      if (count < imgArray.length - 1) {
+        count++;
+        banner.style.backgroundImage = `url(${imgArray[count].src})`
+        actClass();
+      } else {
+        count = 0;
+        banner.style.backgroundImage = `url(${imgArray[count].src})`
+        actClass();
+      }
+
+
+      // 선생님 식
+      // count++;
+      // count %= imgArray.length;
+      // banner.style.backgroundImage = `url(${imgArray[count].src})`;
+      // document.querySelectorAll(".banner .btns span").forEach((el, idx) => {
+      //   if (count === idx) {
+      //     el.classList = "act";
+      //   } else {
+      //     el.classList = "";
+      //   };
+      // });
+
+
+      // count++;
+      // count %= colorArray.length;
+      // banner.style.backgroundImage = `url(img/img00${count + 1}.jpeg)`
+
+      // count++;
+      // count %= colorArray.length;
+      // document.querySelector("#banner").classList = "banner " + colorArray[count];
+    }
+
+    intervalId = setInterval(selectColor, 1000);
+
+    // 내가 만든 swiper제어하기
+    const stopBtnInnerHTML = (a) => {
+      document.querySelector("#stopBtn").innerHTML = a;
+    }
+
+    document.querySelector("#stopBtn").addEventListener("click", () => {
+      if (!toggle) {
+        clearInterval(intervalId);
+        toggle = !toggle;
+        stopBtnInnerHTML("start")
+      } else {
+        intervalId = setInterval(selectColor, 1000);
+        toggle = !toggle;
+        stopBtnInnerHTML("stop")
+      }
+    })
+
+    document.querySelectorAll(".banner .btns span").forEach((el, idx) => {
+
+      el.addEventListener("click", function () {
+        clearInterval(intervalId);
+        document.querySelectorAll(".banner .btns span").forEach((eel, iidx) => {
+          eel.classList = "";
+        })
+        // alert(idx) // 각각의 span index확인
+        // actClass();
+        el.classList = "act";
+        banner.style.backgroundImage = `url(${imgArray[idx].src})`
+
+
+      })
+    })
+  </script>
+</body>
+
+</html>
